@@ -1,86 +1,73 @@
-!DOCTYPE html
-html lang=zh-TW
-head
-    meta charset=UTF-8
-    title可愛下課倒數器 🧸title
-    style
-        body { font-family 'Arial', sans-serif; background-color #fff5f5; display flex; flex-direction column; align-items center; justify-content center; height 100vh; margin 0; }
-        .card { background white; padding 30px; border-radius 20px; box-shadow 0 10px 20px rgba(0,0,0,0.1); text-align center; width 350px; }
-        h2 { color #ff9a9e; margin-bottom 20px; }
-        input { font-size 18px; padding 8px; border 2px solid #ffcfdf; border-radius 10px; width 120px; text-align center; outline none; }
-        button { background #ff9a9e; color white; border none; padding 10px 20px; border-radius 10px; cursor pointer; font-size 16px; margin-top 10px; transition 0.3s; }
-        buttonhover { background #ff757a; }
-        #timer { font-size 48px; font-weight bold; color #555; margin 20px 0; }
-        
-         視覺化軌道 
-        .track { width 100%; height 60px; background #f0f0f0; border-radius 30px; position relative; margin 20px 0; overflow hidden; border 2px solid #eee; }
-        .school { position absolute; right 10px; top 10px; font-size 30px; z-index 2; }
-        #bear { position absolute; left 10px; top 10px; font-size 30px; transition left 1s linear; z-index 3; }
-        .progress-bar { position absolute; left 0; top 0; height 100%; background #ffe0e0; width 0%; transition width 1s linear; }
-    style
-head
-body
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>可愛下課倒數器 🧸</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #fff5f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; width: 350px; }
+        h2 { color: #ff9a9e; margin-bottom: 20px; }
+        input { font-size: 18px; padding: 8px; border: 2px solid #ffcfdf; border-radius: 10px; width: 150px; text-align: center; outline: none; }
+        button { background: #ff9a9e; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 16px; margin-top: 15px; transition: 0.3s; }
+        button:hover { background: #ff757a; }
+        #timer { font-size: 48px; font-weight: bold; color: #555; margin: 20px 0; }
+        .track { width: 100%; height: 60px; background: #f0f0f0; border-radius: 30px; position: relative; margin: 20px 0; overflow: hidden; border: 2px solid #eee; }
+        .school { position: absolute; right: 10px; top: 10px; font-size: 30px; z-index: 2; }
+        #bear { position: absolute; left: 10px; top: 10px; font-size: 30px; transition: left 1s linear; z-index: 3; }
+        .progress-bar { position: absolute; left: 0; top: 0; height: 100%; background: #ffe0e0; width: 0%; transition: width 1s linear; }
+    </style>
+</head>
+<body>
 
-div class=card
-    h2下課倒數 🏫h2
-    input type=time id=targetTime value=1600
-    br
-    button onclick=startTimer()開始倒數 🚀button
+<div class="card">
+    <h2>下課倒數 🏫</h2>
+    <input type="time" id="targetTime" value="16:00">
+    <br>
+    <button onclick="startTimer()">開始倒數 🚀</button>
 
-    div class=track
-        div class=progress-bar id=bardiv
-        div class=school🏫div
-        div id=bear🧸div
-    div
+    <div class="track">
+        <div class="progress-bar" id="bar"></div>
+        <div class="school">🏫</div>
+        <div id="bear">🧸</div>
+    </div>
 
-    div id=timer000000div
-    p id=msg style=color #ff757a; font-weight bold;p
-div
+    <div id="timer">00:00:00</div>
+    <p id="msg" style="color: #ff757a; font-weight: bold; min-height: 24px;"></p>
+</div>
 
-script
+<script>
     let timerInterval;
-
     function startTimer() {
         clearInterval(timerInterval);
         const timeInput = document.getElementById('targetTime').value;
-        if (!timeInput) return alert(請先設定時間！);
-
-        const [hours, minutes] = timeInput.split('');
+        if (!timeInput) return alert("請先設定時間！");
+        const [hours, minutes] = timeInput.split(':');
         const now = new Date();
         let target = new Date();
         target.setHours(hours, minutes, 0);
-
-        if (target  now) target.setDate(target.getDate() + 1);
-
-        const totalSeconds = Math.floor((target - now)  1000);
-        
-        timerInterval = setInterval(() = {
+        if (target < now) target.setDate(target.getDate() + 1);
+        const totalSeconds = Math.floor((target - now) / 1000);
+        timerInterval = setInterval(() => {
             const currentTime = new Date();
-            const remain = Math.floor((target - currentTime)  1000);
-
-            if (remain = 0) {
+            const remain = Math.floor((target - currentTime) / 1000);
+            if (remain <= 0) {
                 clearInterval(timerInterval);
-                document.getElementById('timer').innerText = 000000;
-                document.getElementById('bear').style.left = calc(100% - 45px);
-                document.getElementById('bar').style.width = 100%;
-                document.getElementById('msg').innerText = 🎉 下課啦！辛苦了！ 🎉;
+                document.getElementById('timer').innerText = "00:00:00";
+                document.getElementById('bear').style.left = "calc(100% - 45px)";
+                document.getElementById('bar').style.width = "100%";
+                document.getElementById('msg').innerText = "🎉 下課啦！辛苦了！ 🎉";
                 return;
             }
-
-             更新數字
-            const h = Math.floor(remain  3600).toString().padStart(2, '0');
-            const m = Math.floor((remain % 3600)  60).toString().padStart(2, '0');
+            const h = Math.floor(remain / 3600).toString().padStart(2, '0');
+            const m = Math.floor((remain % 3600) / 60).toString().padStart(2, '0');
             const s = (remain % 60).toString().padStart(2, '0');
-            document.getElementById('timer').innerText = `${h}${m}${s}`;
-
-             更新小熊位置 (百分比)
-            const progress = ((totalSeconds - remain)  totalSeconds)  100;
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            const progress = ((totalSeconds - remain) / totalSeconds) * 100;
             document.getElementById('bear').style.left = `calc(${progress}% - 5px)`;
             document.getElementById('bar').style.width = `${progress}%`;
-            document.getElementById('msg').innerText = ;
+            document.getElementById('msg').innerText = "";
         }, 1000);
     }
-script
-
-body
-html
+</script>
+</body>
+</html>
